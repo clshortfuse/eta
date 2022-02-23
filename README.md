@@ -174,7 +174,16 @@ Additionally, Eta is a letter of the Greek alphabet (it stands for all sorts of 
     loader: 'html-loader',
     options: {
       preprocessor(content, loaderContext) {
-        return eta.render(content, {}, { filename: loaderContext.resourcePath });
+        const options = {
+          filepathCache: {},
+          cache: true,
+          filename: loaderContext.resourcePath,
+        };
+        const result = eta.render(content, {}, options);
+        for (const value of Object.values(options.filepathCache)) {
+          loaderContext.addDependency(value);
+        }
+        return result;
       },
     },
   }
